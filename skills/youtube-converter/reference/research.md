@@ -1,7 +1,7 @@
 # Research mode - a topic instead of a video
 
-Read this when the user gives a topic rather than a video. Commands use the
-same `uv run python -m ytconv` form as SKILL.md, and "Step 6" means SKILL.md's
+Read this when the user gives a topic rather than a video. Write `YTCONV` as
+SKILL.md's Step 1 says, and "Step 6" means SKILL.md's
 Step 6.
 
 ## Contents
@@ -26,7 +26,7 @@ topic; you find the videos, read them, and write one note comparing them.
 place (this note is one they will want to keep - say where it is).
 
 ```bash
-uv run python -m ytconv --search "how do black holes form" -o RESDIR
+YTCONV --search "how do black holes form" -o RESDIR
 ```
 
 About 8 seconds. It prints 10 results - channel (✓ = verified), length, views,
@@ -53,7 +53,7 @@ on. Wait for them only if they asked to choose.
 name must be the video id - the citation check looks there):
 
 ```bash
-uv run python -m ytconv "URL_FROM_SEARCH_JSON" --no-frames -o RESDIR/videos/<id>
+YTCONV "URL_FROM_SEARCH_JSON" --no-frames -o RESDIR/videos/<id>
 ```
 
 **4. Read.** Use the chapters in each `metadata.json` to go straight to the
@@ -65,7 +65,7 @@ labelled animation; at most 3 videos. Use `--at` on the moment it is said
 (Step 6), writing into the same folder:
 
 ```bash
-uv run python -m ytconv "URL_FROM_SEARCH_JSON" --at 02:41 -o RESDIR/videos/<id>
+YTCONV "URL_FROM_SEARCH_JSON" --at 02:41 -o RESDIR/videos/<id>
 ```
 
 Look at the frame before using it.
@@ -110,7 +110,7 @@ Rules - these are what make the note trustworthy:
 **7. Build the page and check the citations:**
 
 ```bash
-uv run python -m ytconv --research-page RESDIR
+YTCONV --research-page RESDIR
 ```
 
 It writes `RESDIR/research.html` and checks every timestamp link against the

@@ -18,12 +18,12 @@ causes in order: yt-dlp out of date, yt-dlp missing its JavaScript challenge
 solver, or a network (often school or work Wi-Fi) blocking YouTube's video
 servers.
 
-To check whether YouTube or yt-dlp has broken the tool in general, run this in
-`PROJECT` - captions and search, about 15 seconds; without `--quick` it also
+To check whether YouTube or yt-dlp has broken the tool in general - only with a
+cloned repo (a `PROJECT` line in Step 1) - run this: captions and search, about 15 seconds; without `--quick` it also
 tests a download and frames (about a minute, 9 MB):
 
 ```bash
-uv run python tests/healthcheck.py --quick
+cd "PROJECT" && uv run python tests/healthcheck.py --quick
 ```
 
 ## When frames come back wrong

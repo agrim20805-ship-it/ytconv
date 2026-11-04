@@ -59,19 +59,31 @@ Say in one line which add-ons you are using and why, then run them.
 If ytconv's MCP tools (`convert_video`, `search_videos`, ...) are also loaded, still run
 the command as this skill says: it has every option and writes files directly.
 
-## Step 1 - Find the project folder
+## Step 1 - Find the tool
 
-The skill is installed as a link from `~/.claude/skills/youtube-converter` back
-into the cloned repo, so the repo is two folders above the link's real
-location:
+The skill works three ways: inside a cloned repo, after `pip install ytconv`,
+or copied on its own. This script works out which, and prints the command to
+use:
 
 ```bash
-cd -P "$HOME/.claude/skills/youtube-converter/../.." && pwd -P
+bash "${CLAUDE_SKILL_DIR}/scripts/find_ytconv.sh"
 ```
 
-Call the printed path `PROJECT`. It should contain `ytconv/` and
-`pyproject.toml`. If it does not, the skill was copied rather than linked - ask
-the user where they cloned the repo instead of guessing.
+(If `${CLAUDE_SKILL_DIR}` was not filled in, run
+`bash "$HOME/.claude/skills/youtube-converter/scripts/find_ytconv.sh"`.)
+
+- **Its first line is the command.** Wherever this skill writes `YTCONV`, put
+  that line in its place, exactly as printed - for example
+  `ytconv "URL" -o OUTDIR --no-frames`. Do not store it in a shell variable:
+  zsh would treat the whole line as one program name.
+- **A second line `PROJECT=...`** means the skill is inside a cloned repo. The
+  command then starts by changing into that folder, so **always give `-o` an
+  absolute path** (the session scratchpad, or `"$HOME/..."`).
+- **Exit 1** means ytconv is not installed. Show the user what it printed, and
+  do not install anything without asking.
+
+A few extras need the cloned repo: the health check and listen. Without a
+`PROJECT` line, skip them and say so.
 
 Write paths as `"$HOME/..."`, never `"~/..."`. A tilde inside double quotes is
 **not** expanded by the shell - `cd "~/Desktop"` fails with
@@ -88,39 +100,36 @@ command -v yt-dlp ffmpeg uv whisper-cli
 point them to the README's Requirements section. Do not install anything
 without asking.
 
-If `uv` is there and `PROJECT/.venv` is missing, `uv sync` (run in `PROJECT`)
-creates it. The basic tool installs no Python packages.
-
 **Speech-to-text is optional and free.** It is set up if either
-`whisper-cli` printed a path (whisper.cpp) or faster-whisper is installed:
+`whisper-cli` printed a path (whisper.cpp) or faster-whisper is installed. In a
+cloned repo, check from `PROJECT`:
 
 ```bash
 uv run --no-sync python -c "import faster_whisper" && echo faster-whisper ok
 ```
 
-(`--no-sync` checks without installing anything.) If it is installed, write
-every `uv run python -m ytconv` below as
-`uv run --extra whisper python -m ytconv`. If neither engine is there, do not
-install one without asking - faster-whisper is about 180 MB of packages, and
-either engine downloads a 465 MB model on first use.
+(`--no-sync` checks without installing anything.) If it is installed, the
+`YTCONV` line becomes `cd "PROJECT" && uv run --extra whisper python -m ytconv`,
+because without `--extra whisper` uv removes it again. After a pip install, check
+with `python3 -c "import faster_whisper"`; nothing else changes. If neither
+engine is there, do not install one without asking - faster-whisper is about
+180 MB of packages, and either engine downloads a 465 MB model on first use.
 
-**No uv?** The user may have set up with pip instead (`GUIDE.md`, "Without uv").
-Then `PROJECT/.venv` holds their yt-dlp, and every `uv run python -m ytconv ...`
-below becomes:
+**A cloned repo but no uv?** The script says so. The user may have set up with
+pip instead (`GUIDE.md`, "Without uv"). If `PROJECT/.venv` exists, `YTCONV` is:
 
 ```bash
-source .venv/bin/activate && python -m ytconv ...
+cd "PROJECT" && source .venv/bin/activate && python -m ytconv
 ```
 
 Activating matters: it is how the tool finds the pip-installed yt-dlp. If
-there is no uv and no `.venv`, point the user to the pip setup in `GUIDE.md` rather
+there is no `.venv` either, point the user to the pip setup in `GUIDE.md` rather
 than installing anything.
 
 ## Step 3 - Transcript first
 
 ```bash
-cd "PROJECT"
-uv run python -m ytconv "URL" -o OUTDIR --no-frames
+YTCONV "URL" -o OUTDIR --no-frames
 ```
 
 `--no-frames` skips the video download entirely, so this takes seconds. Put
@@ -162,8 +171,8 @@ nonsense). If the transcript reads as gibberish, re-run with the real language:
 Spanish":
 
 ```bash
-uv run python -m ytconv "URL" -o OUTDIR --no-frames --lang hi --translate
-uv run python -m ytconv "URL" -o OUTDIR --no-frames --translate es
+YTCONV "URL" -o OUTDIR --no-frames --lang hi --translate
+YTCONV "URL" -o OUTDIR --no-frames --translate es
 ```
 
 `--translate` alone means English. Read what the tool prints:
@@ -182,7 +191,7 @@ uv run python -m ytconv "URL" -o OUTDIR --no-frames --translate es
 ## Step 5 - Frames, if the user wants the visuals
 
 ```bash
-uv run python -m ytconv "URL" -o OUTDIR
+YTCONV "URL" -o OUTDIR
 ```
 
 This downloads the video to a temp folder (deleted afterwards), scores every
@@ -199,7 +208,7 @@ recordings and tablet drawing (it also keeps a light slide with a small moving
 presenter bubble beside it); board lets a moving presenter through and makes
 presenter-removed copies (Step 7); gameplay keeps the sharpest moments of fast
 footage. Across six hand-labelled lecture
-styles (`PROJECT/tests/RESULTS.md`) the automatic choice kept 73% useful
+styles ([tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md)) the automatic choice kept 73% useful
 frames and showed 76% of the useful moments, against 60% and 56% for the old
 always-default behaviour. **Do not pass a mode flag unless the printed mode is
 clearly wrong** for the video - any of `--gameplay`, `--every`, `--motion-max`
@@ -224,7 +233,7 @@ If you are unsure what the video is, the title and transcript usually say.
 "Turn this lecture into notes", "make me a study page": add `--notes`.
 
 ```bash
-uv run python -m ytconv "URL" -o OUTDIR --notes
+YTCONV "URL" -o OUTDIR --notes
 ```
 
 It writes `OUTDIR/notes.html` (open in a browser) and `OUTDIR/notes.md`: one
@@ -246,7 +255,7 @@ did not ask.
 spoken second usually gets the presenter mid-sentence. Use `--at`:
 
 ```bash
-uv run python -m ytconv "URL" -o OUTDIR --at 06:29 --at 14:36
+YTCONV "URL" -o OUTDIR --at 06:29 --at 14:36
 ```
 
 ```
@@ -290,7 +299,7 @@ results: a smudge where the presenter stood longest; writing from the next
 ~20 s can appear, sometimes half-written; anything erased in that time is gone.
 
 ```bash
-uv run python -m ytconv "URL" -o OUTDIR --mark --clean-board
+YTCONV "URL" -o OUTDIR --mark --clean-board
 ```
 
 ## Step 8 - Research mode: a topic instead of a video
