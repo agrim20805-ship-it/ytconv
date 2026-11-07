@@ -47,7 +47,8 @@ def _drop_overlap(prev_words, cur_words):
 
 def parse_vtt(path):
     """Return (lines, stats). Each line is '[MM:SS] text'."""
-    raw = open(path, encoding="utf-8-sig", errors="replace").read()
+    with open(path, encoding="utf-8-sig", errors="replace") as f:
+        raw = f.read()
     raw = raw.replace("\r\n", "\n").replace("\r", "\n")   # SRT from Windows tools
 
     # Step 1 - regex out the timestamp/text blocks.

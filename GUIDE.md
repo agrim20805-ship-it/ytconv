@@ -276,14 +276,17 @@ uv run python -m ytconv --research-page research/black-holes
 ```
 
 ```
-[research] 50 timestamp citations across 3 converted videos: 50 ok, 0 to look at
+[research] 50 timestamp citations across 3 converted videos: 50 supported, 0 partly supported, 0 unsupported
 ```
 
 It writes `research.html` and checks every YouTube link that has a time in it:
 the video must be one that was converted, the time must be inside the video,
 and what was said within 30 seconds of it must share words with the sentence
-that cites it. Anything that fails is listed in `research-check.json` for
-Claude to fix. The check catches wrong times and mixed-up videos; it cannot
+that cites it. Each citation is labelled **supported**, **partly supported**
+(only some of its words were said there, or they were said at another time -
+it then says when) or **unsupported** (none of them, past the end, or a video
+that was not converted). The page shows the label next to every citation that
+is not supported, and `research-check.json` lists them for Claude to fix. The check catches wrong times and mixed-up videos; it cannot
 prove a sentence is a fair summary, so the links are there for you to click.
 
 The note has a short answer, a table of the sources and why each was chosen, a

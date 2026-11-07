@@ -56,8 +56,32 @@ class CitationCheck(unittest.TestCase):
         self.assertEqual(len(self.result["problems"]), 4)
 
     def test_summary_line(self):
-        self.assertIn("6 timestamp citations across 1 converted videos: 2 ok, 4 to look at",
-                      self.printed)
+        self.assertIn("6 timestamp citations across 1 converted videos: 2 supported, "
+                      "1 partly supported, 3 unsupported", self.printed)
+
+    def test_support_labels(self):
+        support = {c["second"]: c["support"] for c in self.result["ok"] + self.result["problems"]}
+        self.assertEqual(support, {60: "supported", 125: "supported", 160: "partly supported",
+                                   0: "unsupported", 540: "unsupported", 10: "unsupported"})
+        self.assertEqual(self.result["support"],
+                         {"supported": 2, "partly supported": 1, "unsupported": 3})
+
+    def test_wrong_time_points_to_where_it_was_said(self):
+        row = next(c for c in self.result["problems"] if c["second"] == 160)
+        self.assertEqual(row["said_at"], 60)
+        self.assertIn("said at 01:00", row["problem"])
+        self.assertTrue(all("said_at" not in c for c in self.result["problems"] if c["second"] != 160))
+
+    def test_supported_means_no_problem(self):
+        for c in self.result["ok"] + self.result["problems"]:
+            with self.subTest(second=c["second"]):
+                self.assertEqual(c["support"] == "supported", c["problem"] is None)
+
+    def test_page_labels_only_the_weak_citations(self):
+        page = (self.folder / "research.html").read_text(encoding="utf-8")
+        self.assertEqual(page.count('<span class="support">(partly supported)</span>'), 1)
+        self.assertEqual(page.count('<span class="support">(unsupported)</span>'), 3)
+        self.assertNotIn("(supported)", page)
 
     def test_which_citations_pass(self):
         self.assertEqual(sorted(c["second"] for c in self.result["ok"]), [60, 125])

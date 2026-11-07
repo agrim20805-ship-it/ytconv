@@ -810,15 +810,20 @@ def build_research_page(args, request_id=None):
     except (OSError, ValueError):
         raise ToolError(f"The page was built but research-check.json in {folder} could not be read.")
     problems, uncited = result.get("problems", []), result.get("uncited", [])
+    support = result.get("support", {})
     lines = [f"research.html: {folder / 'research.html'}", f"research.md: {folder / 'research.md'}",
              f"{result.get('citations', 0)} timestamp citations across {len(result.get('videos_found', []))} "
-             f"converted videos: {len(result.get('ok', []))} ok, {len(problems)} to fix."]
+             f"converted videos: {support.get('supported', 0)} supported, "
+             f"{support.get('partly supported', 0)} partly supported, "
+             f"{support.get('unsupported', 0)} unsupported."]
     if problems:
         lines.append("")
-        lines.append("Fix each of these (correct the time, cite the right video, or reword), then call again:")
+        lines.append("For each of these, read the transcript around the cited time (and around "
+                     "said_at, when given), then correct the time, cite the right video, reword the "
+                     "claim to what was said, or mark it '(not from the videos)'. Then call again:")
         for c in problems:
-            lines.append(f"  - [{c.get('label')}] video {c.get('video')} at {_hms(c.get('second', 0))}: "
-                         f"{c.get('problem')}. Claim: {c.get('claim')}")
+            lines.append(f"  - [{c.get('label')}] video {c.get('video')} at {_hms(c.get('second', 0))} "
+                         f"({c.get('support', 'unsupported')}): {c.get('problem')}. Claim: {c.get('claim')}")
     if uncited:
         lines.append("")
         lines.append(f"{len(uncited)} paragraphs or bullets have no timestamp citation - cite them, or "

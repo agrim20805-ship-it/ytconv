@@ -28,6 +28,8 @@ DETAIL_CLIENT = "web_embedded"
 SHORT_SECONDS = 60          # this long or less counts as a Short
 CITE_WINDOW = 30            # a citation at T is checked against what was said T-30..T+30 s
 NOT_FROM_VIDEOS = "(not from the videos)"
+# How well what was said backs a citation (research-check.json "support").
+SUPPORTED, PARTLY, UNSUPPORTED = "supported", "partly supported", "unsupported"
 
 
 # ---- search -----------------------------------------------------------------
@@ -167,7 +169,8 @@ def _safe_href(url):
     return ":" not in url.split("/")[0] and not url.startswith("//")
 
 
-def _inline(text):
+def _inline(text, labels=None):
+    """Markdown inline -> HTML. labels: {href: support} shown after those links."""
     out, pos = [], 0
     for m in INLINE.finditer(text):
         out.append(notes._e(text[pos:m.start()]))
@@ -184,10 +187,12 @@ def _inline(text):
             if _safe_href(href):
                 extra = ' target="_blank" rel="noopener"' if href.startswith("https://") else ""
                 out.append(f'<a href="{notes._e(href)}"{extra}>{label}</a>')
+                if labels and href in labels:
+                    out.append(f' <span class="support">({notes._e(labels[href])})</span>')
             else:
                 out.append(notes._e(m.group(0)))
         elif m.group("bold") is not None:
-            out.append(f"<strong>{_inline(m.group('bold'))}</strong>")
+            out.append(f"<strong>{_inline(m.group('bold'), labels)}</strong>")
         else:
             out.append(f"<code>{notes._e(m.group('code'))}</code>")
     out.append(notes._e(text[pos:]))
@@ -276,7 +281,7 @@ def parse(md):
     return blocks
 
 
-def render(blocks, title):
+def render(blocks, title, labels=None):
     p = ['<!doctype html>', '<html lang="en">', '<head>', '<meta charset="utf-8">',
          '<meta name="viewport" content="width=device-width, initial-scale=1">',
          f'<title>{notes._e(title)} - research</title>',
@@ -286,11 +291,12 @@ def render(blocks, title):
             level = min(int(kind[1]), 3)
             p.append(f"<h{level}>{_inline(data)}</h{level}>")
         elif kind == "p":
-            p.append(f"<p>{_inline(data)}</p>")
+            p.append(f"<p>{_inline(data, labels)}</p>")
         elif kind in ("ul", "ol"):
-            p.append(f"<{kind}>" + "".join(f"<li>{_inline(x)}</li>" for x in data) + f"</{kind}>")
+            p.append(f"<{kind}>" + "".join(f"<li>{_inline(x, labels)}</li>" for x in data)
+                     + f"</{kind}>")
         elif kind == "quote":
-            p.append(f"<blockquote>{_inline(data)}</blockquote>")
+            p.append(f"<blockquote>{_inline(data, labels)}</blockquote>")
         elif kind == "figure":
             alt, src = data
             if _safe_href(src):
@@ -302,7 +308,7 @@ def render(blocks, title):
             head, *body = data
             p.append('<div class="tablewrap"><table><thead><tr>'
                      + "".join(f"<th>{_inline(c)}</th>" for c in head) + "</tr></thead><tbody>"
-                     + "".join("<tr>" + "".join(f"<td>{_inline(c)}</td>" for c in row) + "</tr>"
+                     + "".join("<tr>" + "".join(f"<td>{_inline(c, labels)}</td>" for c in row) + "</tr>"
                                for row in body)
                      + "</tbody></table></div>")
     p += ['</main>', '</body>', '</html>']
@@ -320,6 +326,7 @@ th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vert
 th { background: var(--card); }
 figure { margin: 16px 0; max-width: 760px; }
 code { font-size: .9em; background: var(--card); padding: 1px 4px; border-radius: 4px; }
+.support { font-size: .85em; font-weight: 600; white-space: nowrap; }
 """
 
 
@@ -372,6 +379,30 @@ def _claim_words(text):
     return {w for w in match.tokens(bare) if w not in FILLER and not w.isdigit()}
 
 
+def _window_words(tok_lines, centre, claim_words):
+    """Claim words said within CITE_WINDOW seconds of centre."""
+    shared = set()
+    for s, toks in tok_lines:
+        if centre - CITE_WINDOW <= s <= centre + CITE_WINDOW:
+            shared |= claim_words & toks
+    return shared
+
+
+def _said_at(tok_lines, sec, claim_words, needed):
+    """The second where the claim's words were said, when that is not near sec:
+    the line sharing the most claim words whose window would pass the check
+    (on a tie, the one nearest sec). None if there is no such line."""
+    best = None
+    for s, toks in tok_lines:
+        n = len(claim_words & toks)
+        if not n or len(_window_words(tok_lines, s, claim_words)) < needed:
+            continue
+        key = (-n, abs(s - sec))
+        if best is None or key < best[0]:
+            best = (key, s)
+    return best[1] if best else None
+
+
 SKIP_HEADINGS = re.compile(r"question|source|none of them|not covered|frame|picture", re.I)
 
 
@@ -379,6 +410,7 @@ def check(blocks, videos):
     """Every YouTube timestamp link, checked. Returns a dict for research-check.json."""
     cites, uncited = [], []
     units = []
+    tokenised = {}      # video id -> [(second, tokens of that line)]
     for kind, data, heading in blocks:
         if kind in ("p", "quote"):
             units.append((data, heading))
@@ -399,8 +431,8 @@ def check(blocks, videos):
                 continue        # a plain link to a video (e.g. in the sources table)
             found += 1
             vid = y.group("id")
-            row = {"video": vid, "second": sec, "label": m.group("text"),
-                   "claim": _claim_text(text)[:160], "problem": None}
+            row = {"video": vid, "second": sec, "label": m.group("text"), "url": href,
+                   "claim": _claim_text(text)[:160], "problem": None, "support": UNSUPPORTED}
             v = videos.get(vid)
             if v is None:
                 row["problem"] = "video not converted: no videos/<id>/ folder for it"
@@ -414,17 +446,41 @@ def check(blocks, videos):
                 shared = claim_words & match.tokens(said)
                 row["shared_words"] = sorted(shared)[:12]
                 needed = min(SHARED_NEEDED, max(1, len(claim_words) - SHORT_CLAIM + 1))
-                if len(shared) < needed:
+                if len(shared) >= needed:
+                    row["support"] = SUPPORTED
+                else:
                     row["problem"] = (f"check by hand: what was said within {CITE_WINDOW} s "
                                       f"of this time shares {len(shared)} of the claim's "
                                       f"words ({', '.join(sorted(shared)) or 'none'})")
+                    if vid not in tokenised:
+                        tokenised[vid] = [(s, match.tokens(t)) for s, t in v["lines"]]
+                    said_at = _said_at(tokenised[vid], sec, claim_words, needed)
+                    if said_at is not None:
+                        row["said_at"] = said_at
+                        row["problem"] += (f"; these words were said at {notes._clock(said_at)}"
+                                           " - cite that time if it is the same point")
+                    if shared or said_at is not None:
+                        row["support"] = PARTLY
             cites.append(row)
         if (not found and NOT_FROM_VIDEOS not in text and not SKIP_HEADINGS.search(heading or "")
                 and len(claim_words) >= SHORT_CLAIM + 1):
             uncited.append({"heading": heading, "text": _claim_text(text)[:160]})
     return {"citations": len(cites), "problems": [c for c in cites if c["problem"]],
             "ok": [c for c in cites if not c["problem"]], "uncited": uncited,
+            "support": {k: sum(c["support"] == k for c in cites)
+                        for k in (SUPPORTED, PARTLY, UNSUPPORTED)},
             "videos_found": sorted(videos)}
+
+
+def _labels(result):
+    """{link: support} for every citation that is not supported. A link cited
+    twice with different results shows the weaker one."""
+    rank = {SUPPORTED: 0, PARTLY: 1, UNSUPPORTED: 2}
+    labels = {}
+    for c in result["problems"]:        # every citation that is not supported has a problem
+        if rank[c["support"]] > rank[labels.get(c["url"], SUPPORTED)]:
+            labels[c["url"]] = c["support"]
+    return labels
 
 
 def build_page(folder):
@@ -434,17 +490,19 @@ def build_page(folder):
     md = md_path.read_text(encoding="utf-8")
     blocks = parse(md)
     title = next((d for k, d, _ in blocks if k == "h1"), "Research")
-    (folder / "research.html").write_text(render(blocks, _claim_text(title)), encoding="utf-8")
     result = check(blocks, _load_videos(folder))
+    (folder / "research.html").write_text(render(blocks, _claim_text(title), _labels(result)),
+                                          encoding="utf-8")
     (folder / "research-check.json").write_text(json.dumps(result, indent=1, ensure_ascii=False),
                                                 encoding="utf-8")
     print(f"[research] wrote {folder / 'research.html'}", flush=True)
+    s = result["support"]
     print(f"[research] {result['citations']} timestamp citations across "
-          f"{len(result['videos_found'])} converted videos: "
-          f"{len(result['ok'])} ok, {len(result['problems'])} to look at", flush=True)
+          f"{len(result['videos_found'])} converted videos: {s[SUPPORTED]} {SUPPORTED}, "
+          f"{s[PARTLY]} {PARTLY}, {s[UNSUPPORTED]} {UNSUPPORTED}", flush=True)
     for c in result["problems"]:
-        print(f"  - [{c['label']}] {c['video']} at {notes._clock(c['second'])}: {c['problem']}",
-              flush=True)
+        print(f"  - [{c['label']}] {c['video']} at {notes._clock(c['second'])} "
+              f"({c['support']}): {c['problem']}", flush=True)
     if result["uncited"]:
         print(f"[research] {len(result['uncited'])} paragraphs or bullets with no timestamp "
               f"citation (fine if they are not claims; mark own knowledge "

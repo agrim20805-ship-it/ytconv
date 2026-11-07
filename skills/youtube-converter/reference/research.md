@@ -115,11 +115,30 @@ YTCONV --research-page RESDIR
 
 It writes `RESDIR/research.html` and checks every timestamp link against the
 transcripts: the video must be in `RESDIR/videos/`, the time inside the video,
-and what was said within 30 s must share words with the claim. **Fix every
-line it lists** - correct the time, cite the right video, or reword - and run
-it again until it reports 0 to look at, or each remaining one is a correct
-citation the word check cannot see (say which in your report). Uncited
-paragraphs it lists either get a citation or `(not from the videos)`.
+and what was said within 30 s must share words with the claim. Each citation
+gets a label:
+
+- **supported** - enough of the claim's words were said within 30 s;
+- **partly supported** - only some were, or they were said at another time
+  (the line then says when: "these words were said at 01:23");
+- **unsupported** - none were, the time is past the end, or the video was not
+  converted.
+
+**Then make the labels true by reading, not by trusting the word check.** For
+every line it lists, read `transcript.txt` around the cited time - and around
+the "said at" time when there is one - and decide:
+
+- it was said there -> keep it (the word check missed a paraphrase; say which
+  in your report);
+- it was said at the other time -> change the citation to that time;
+- something narrower was said -> reword the claim to what was said;
+- no video said it -> remove it, or mark it `(not from the videos)`.
+
+Run it again until nothing is unsupported and every partly supported line left
+is one you checked. "Supported" only means the words match; it does not prove
+the sentence is a fair summary, so take extra care with numbers and
+cause-and-effect claims. Uncited paragraphs it lists either get a citation or
+`(not from the videos)`.
 
 **8. Report:** the short answer in 2-3 sentences, the 3 videos, where they
 disagree, and the paths of `research.html` and `research.md`.

@@ -101,12 +101,13 @@ MIN_SCORE = 0.08        # below this no slide text matches the speech
 def read_transcript(path):
     """[(second, text)] from a transcript.txt written by ytconv."""
     out = []
-    for line in open(path, encoding="utf-8"):
-        m = STAMP.match(line.rstrip("\n"))
-        if m:
-            a, b, c = m.group(1), m.group(2), m.group(3)
-            sec = int(a) * 3600 + int(b) * 60 + int(c) if c else int(a) * 60 + int(b)
-            out.append((sec, m.group(4)))
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            m = STAMP.match(line.rstrip("\n"))
+            if m:
+                a, b, c = m.group(1), m.group(2), m.group(3)
+                sec = int(a) * 3600 + int(b) * 60 + int(c) if c else int(a) * 60 + int(b)
+                out.append((sec, m.group(4)))
     return out
 
 
