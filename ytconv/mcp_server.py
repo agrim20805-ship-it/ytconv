@@ -157,6 +157,10 @@ TOOLS = [
                                "description": "Force one speech-to-text engine (default: whichever is installed)."},
                 "client": {"type": "string", "pattern": "^[A-Za-z0-9_]{1,40}$",
                            "description": "Force one yt-dlp player client (e.g. web_embedded) instead of the fallback chain. Only when downloads keep failing."},
+                "playlist": {"type": "boolean",
+                             "description": "source is a YouTube playlist: convert each video into out_dir/NN-<id>/ and write out_dir/index.html listing them. Finished videos are skipped if called again with the same out_dir. Not with research_dir or at."},
+                "playlist_limit": {"type": "integer", "minimum": 0,
+                                   "description": "With playlist: convert at most the first N videos (default 10; 0 = all, which can take hours)."},
                 "keep_video": {"type": "boolean",
                                "description": "Keep the downloaded video file instead of deleting it (it goes in work_dir, or a temp folder)."},
                 "work_dir": {"type": "string",
@@ -418,6 +422,20 @@ def convert_video(args, request_id=None):
 
     no_frames = _bool_arg(args, "no_frames")
     cmd = [sys.executable, "-m", "ytconv", source]
+    is_playlist = _bool_arg(args, "playlist")
+    playlist_limit = _number_arg(args, "playlist_limit", int, 0)
+    if playlist_limit is not None and not is_playlist:
+        raise ToolError("playlist_limit only works with playlist set to true.")
+    if is_playlist:
+        if is_local:
+            raise ToolError("playlist needs a YouTube playlist link, not a file.")
+        if _text_arg(args, "research_dir", str):
+            raise ToolError("playlist cannot be used with research_dir.")
+        if args.get("at"):
+            raise ToolError("playlist cannot be used with at: one time means nothing across many videos.")
+        cmd.append("--playlist")
+        if playlist_limit is not None:
+            cmd += ["--playlist-limit", str(playlist_limit)]
 
     out_arg = _text_arg(args, "out_dir", str)
     research_arg = _text_arg(args, "research_dir", str)
@@ -502,8 +520,33 @@ def convert_video(args, request_id=None):
         _outside_project(work_path, "work_dir")
         cmd += ["--work-dir", str(work_path)]
 
+    if is_playlist:
+        count = playlist_limit if playlist_limit else (50 if playlist_limit == 0 else 10)
+        try:
+            log_tail = _run_cli(cmd, request_id, _timeout() * count, f"Output folder: {out}")
+        except ToolError as exc:
+            if not (out / "index.json").is_file():
+                raise
+            log_tail = str(exc)        # some videos failed or it timed out; the index says which
+        return _playlist_summary(out, log_tail)
     log_tail = _run_cli(cmd, request_id, _timeout(), f"Output folder: {out}")
     return _summary(out, log_tail, is_local)
+
+
+def _playlist_summary(out, log_tail):
+    try:
+        index = json.loads((out / "index.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return "No playlist index was written.\n\nLast log lines:\n" + log_tail
+    rows = index.get("videos", [])
+    parts = [f"Playlist: {index.get('title')}", f"out_dir: {out}",
+             f"index: {out / 'index.html'} (also index.md)", f"{len(rows)} videos:"]
+    for r in rows:
+        parts.append(f"  {r.get('position')}. {r.get('title')} - {r.get('status')} - "
+                     f"{out / str(r.get('folder'))}")
+    parts += ["", "Read each video's transcript.txt with read_transcript(out_dir=<its folder>).",
+              "", "Last log lines:"] + log_tail.splitlines()[-10:]
+    return "\n".join(parts)
 
 
 def _timeout(default=DEFAULT_TIMEOUT):

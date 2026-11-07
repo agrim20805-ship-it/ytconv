@@ -9,7 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from . import fetch, frames, mark, match, ocr, repeats, research, stt, transcript
+from . import fetch, frames, mark, match, ocr, playlist, repeats, research, stt, transcript
 
 LANG_RE = re.compile(r"[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})?")
 
@@ -92,6 +92,12 @@ def build_parser():
     p.add_argument("--notes", action="store_true",
                    help="also write notes.html and notes.md: the transcript by chapter with "
                         "each frame beside what was said and every timestamp linked to the video")
+    p.add_argument("--playlist", action="store_true",
+                   help="the URL is a playlist: convert each video into OUT/NN-<id>/ and write "
+                        "OUT/index.html. Finished videos are skipped on a re-run")
+    p.add_argument("--playlist-limit", type=int, default=None, metavar="N",
+                   help=f"with --playlist: convert at most the first N videos "
+                        f"(default {playlist.DEFAULT_LIMIT}; 0 = all)")
     return p
 
 
@@ -128,6 +134,19 @@ def main(argv=None):
     if args.results is not None and args.search is None:
         print("--results only works with --search.", file=sys.stderr)
         return 2
+    if args.playlist_limit is not None and not args.playlist:
+        print("--playlist-limit only works with --playlist.", file=sys.stderr)
+        return 2
+    if args.playlist and (args.search is not None or args.research_page is not None):
+        print("--playlist cannot be combined with --search or --research-page.", file=sys.stderr)
+        return 2
+    if args.playlist and args.at:
+        print("--playlist cannot be combined with --at: one time means nothing across "
+              "many videos.", file=sys.stderr)
+        return 2
+    if args.playlist_limit is not None and args.playlist_limit < 0:
+        print("--playlist-limit needs 0 (all) or more.", file=sys.stderr)
+        return 2
     if args.research_page is not None:
         return _research_page(args.research_page)
     if args.search is not None:
@@ -162,6 +181,16 @@ def main(argv=None):
               "see the README, Requirements.", file=sys.stderr)
         return 2
 
+    if args.playlist:
+        if is_local:
+            print("--playlist needs a YouTube playlist link, not a file.", file=sys.stderr)
+            return 2
+        return playlist.run(args, _convert)
+    return _convert(args, is_local, local)
+
+
+def _convert(args, is_local, local):
+    """One video: transcript, then frames and the add-ons. Returns the exit code."""
     out = Path(args.out) if args.out else Path("output") / _slug(args.source, is_local)
     out.mkdir(parents=True, exist_ok=True)
 

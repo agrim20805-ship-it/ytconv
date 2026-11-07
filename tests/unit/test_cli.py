@@ -67,6 +67,24 @@ class InputValidation(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("No research.md", err)
 
+    def test_playlist_refusals(self):
+        cases = [((URL, "--playlist-limit", "3"), "only works with --playlist"),
+                 (("--search", "x", "--playlist"), "cannot be combined with --search"),
+                 ((URL, "--playlist", "--at", "01:00"), "cannot be combined with --at"),
+                 ((URL, "--playlist", "--playlist-limit", "-1"), "0 (all) or more")]
+        for argv, message in cases:
+            with self.subTest(argv=argv):
+                code, err = run(*argv)
+                self.assertEqual(code, 2)
+                self.assertIn(message, err)
+
+    def test_playlist_refuses_a_local_file(self):
+        with tempfile.NamedTemporaryFile(suffix=".mp4") as f, \
+                mock.patch("ytconv.cli.shutil.which", return_value="/usr/bin/true"):
+            code, err = run(f.name, "--playlist")
+        self.assertEqual(code, 2)
+        self.assertIn("not a file", err)
+
     def test_missing_programs_are_named(self):
         with mock.patch("ytconv.cli.shutil.which", return_value=None):
             code, err = run(URL, "--no-frames")

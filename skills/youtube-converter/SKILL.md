@@ -44,6 +44,7 @@ example "convert this" with no hint whether they want frames).
 | "the teacher is blocking the board", "remove the presenter" | board mode does it; else `--clean-board` (Step 7) |
 | "game clip", "highlights", "sport" | let the tool pick; `--gameplay` only if it chose wrong (Step 5) |
 | "more frames", "every slide" | `--max-frames N`, or `--max-same 0` for every repeat |
+| a playlist link, "every video in this playlist" | `--playlist` (10 videos unless `--playlist-limit N`; 0 = all). Read `OUTDIR/index.md` first |
 
 Sounds ("what can you hear", "when does the drop hit") are an experimental
 extra that needs the cloned repo - read `reference/listen.md` only then.

@@ -29,6 +29,7 @@ On a Mac's built-in Python, use `pip3` and `python3 -m ytconv`.
 ytconv "URL"               # transcript + frames
 ytconv "URL" --no-frames   # transcript only
 ytconv "URL" --notes       # plus a notes page
+ytconv "URL" --playlist    # every video in a playlist
 ytconv --search "topic"    # research mode
 ```
 

@@ -22,7 +22,7 @@ frame next to what was being said ([notes page](#notes-page)).
 **Contents:** [Requirements](#requirements) · [Setup](#setup) ·
 [Without uv (pip)](#without-uv-pip) ·
 [As a `ytconv` command](#install-it-as-a-ytconv-command) · [Use](#use) ·
-[Your own video files](#your-own-video-files) · [Notes page](#notes-page) ·
+[Your own video files](#your-own-video-files) · [Notes page](#notes-page) · [Playlists](#playlists) ·
 [Research mode](#research-mode) ·
 [No captions - free speech-to-text](#any-video-even-without-captions---free) ·
 [Languages and translation](#languages-and-translation) ·
@@ -240,6 +240,37 @@ browser) and `notes.md` (for Obsidian or any Markdown app).
 
 The page loads nothing from the internet; the frames sit in the `frames/`
 folder beside it, so keep the two together.
+
+## Playlists
+
+Give a playlist link and `--playlist` to convert every video in it:
+
+```bash
+uv run python -m ytconv "https://www.youtube.com/playlist?list=PLAYLIST_ID" --playlist --no-frames -o astronomy
+```
+
+```
+[playlist] Astronomy: 48 videos; converting 10 (--playlist-limit 10; 0 converts all) into astronomy
+```
+
+- Each video goes into its own folder, numbered in playlist order:
+  `astronomy/01-<video id>/`, `02-<video id>/`, and so on. Each holds exactly
+  what a single run writes, so every other option (`--notes`, `--translate`,
+  frames) works the same.
+- `index.html` and `index.md` list every video with its length, whether it
+  worked, and links to its transcript and notes page. They are rewritten after
+  each video, so a run that stops halfway still leaves a correct index.
+- **At most 10 videos unless you say otherwise.** `--playlist-limit 25` for
+  more, `--playlist-limit 0` for all of them. A long playlist with frames can
+  take hours.
+- **Run the same command again to carry on.** Finished folders are skipped; only
+  the videos that failed or were not reached run again.
+- One video failing (no captions, private, blocked) does not stop the rest; the
+  index says why it failed.
+- A link to one video inside a playlist (`watch?v=...&list=...`) converts the
+  whole playlist with `--playlist`, and just that one video without it.
+- Not with `--at` (one time means nothing across many videos), `--search` or a
+  file on your computer.
 
 ## Research mode
 

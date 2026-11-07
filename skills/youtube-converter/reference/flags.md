@@ -10,6 +10,9 @@ run writes. "Step N" means that step in SKILL.md.
 - `--research-page DIR` - research mode: `research.md` -> `research.html`,
   with the citations checked (research mode).
 - `--no-frames` - transcript only, no video download.
+- `--playlist` - the URL is a playlist: each video goes into `OUTDIR/NN-<id>/`,
+  with `index.html` / `index.md` listing them. Re-running skips finished ones.
+  `--playlist-limit N` - at most N videos (default 10; 0 = all). Not with `--at`.
 - `--lang CODE` - the spoken language when YouTube's label is wrong.
 - `--translate [LANG]` - also write `transcript.LANG.txt` (default English).
 - `--stt` - speech-to-text even if captions exist (or a subtitle file is there).
@@ -55,4 +58,5 @@ run writes. "Step N" means that step in SKILL.md.
 | `notes.html`, `notes.md` | with `--notes` (Step 5b) |
 | `search.json` | research mode: the search results and their details |
 | `research.md`, `research.html` | research mode: the note you wrote, and its page |
+| `index.html`, `index.md`, `index.json` | with `--playlist`: every video, its status and its folder |
 | `research-check.json` | research mode: every citation checked, and paragraphs without one |
