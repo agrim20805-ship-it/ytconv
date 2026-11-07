@@ -1,0 +1,27 @@
+name: tests
+
+# The unit tests: caption dedup, timestamps, the citation check and input
+# checks. They need no network, yt-dlp or ffmpeg, so they run anywhere.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    strategy:
+      fail-fast: false
+      matrix:
+        # ubuntu-24.04, not ubuntu-latest: Python 3.9 has no build for 26.04.
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+        python: ["3.9", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests/unit -v
