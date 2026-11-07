@@ -43,6 +43,14 @@ ytconv = "ytconv.cli:main"
 whisper = [
     "faster-whisper>=1.2.1",
 ]
+# yt-dlp with YouTube's JavaScript-puzzle solver and Deno to run it. Unpinned:
+# yt-dlp must stay current to keep working. Its newest releases need Python
+# 3.11, so on 3.9 and 3.10 this brings nothing (pip would pick a year-old
+# yt-dlp); install yt-dlp with Homebrew there. FFmpeg is not on PyPI in a
+# usable form and is always a separate install.
+full = [
+    "yt-dlp[default,deno]; python_version >= '3.11'",
+]
 
 [tool.uv]
 package = false

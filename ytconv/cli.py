@@ -123,6 +123,7 @@ def _missing_tools(is_local, no_frames):
 
 def main(argv=None):
     _console_safe()
+    fetch.use_pip_tools()        # yt-dlp from pip install "ytconv[full]", when not on PATH
     args = build_parser().parse_args(argv)
     modes = [m for m, v in (("a video", args.source), ("--search", args.search),
                             ("--research-page", args.research_page)) if v is not None]
@@ -178,7 +179,9 @@ def main(argv=None):
     if missing:
         print("Missing program(s): " + ", ".join(missing) + ". Install them and make "
               "sure they are on your PATH (open a NEW terminal after installing); "
-              "see the README, Requirements.", file=sys.stderr)
+              "see the README, Requirements."
+              + (" For yt-dlp: " + fetch.YTDLP_HINT if "yt-dlp" in missing else ""),
+              file=sys.stderr)
         return 2
 
     if args.playlist:
@@ -372,8 +375,8 @@ def _search(args):
         print("--search needs a topic to search for.", file=sys.stderr)
         return 2
     if not shutil.which("yt-dlp"):
-        print("Missing program: yt-dlp. Install it and make sure it is on your PATH; "
-              "see the README, Requirements.", file=sys.stderr)
+        print("Missing program: yt-dlp. " + fetch.YTDLP_HINT + " See the README, Requirements.",
+              file=sys.stderr)
         return 2
     slug = re.sub(r"[^a-z0-9]+", "-", args.search.lower()).strip("-")[:40] or "topic"
     out = Path(args.out) if args.out else Path("output") / f"research-{slug}"

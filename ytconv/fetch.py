@@ -21,10 +21,48 @@ yt-dlp said it would pick.
 """
 
 import json
+import os
 import re
+import shutil
 import subprocess
+import sys
+import sysconfig
 import time
 from pathlib import Path
+
+# Shown when yt-dlp is missing. The newest yt-dlp needs Python 3.11, so the
+# ytconv[full] extra only brings it there; older Pythons would get a year-old copy.
+YTDLP_HINT = ('pip install "ytconv[full]" brings it on Python 3.11 or newer; '
+              "on an older Python, use Homebrew (brew install yt-dlp).")
+
+
+def pip_tool_dirs():
+    """Where pip puts programs for this Python: its own folder (a venv, uv tool,
+    pipx) and the per-user one. Neither is on PATH unless a venv is switched on."""
+    dirs = [sysconfig.get_path("scripts")]
+    try:
+        scheme = sysconfig.get_preferred_scheme("user")          # Python 3.10+
+    except AttributeError:
+        scheme = "osx_framework_user" if getattr(sys, "_framework", "") else f"{os.name}_user"
+    try:
+        dirs.append(sysconfig.get_path("scripts", scheme))
+    except KeyError:
+        pass
+    return [d for d in dict.fromkeys(dirs) if d]
+
+
+def use_pip_tools():
+    """If yt-dlp is not on PATH but pip installed it for this Python
+    (pip install "ytconv[full]"), add that folder to the end of PATH. The Deno
+    that came with it - yt-dlp needs it for YouTube's JavaScript puzzle - is
+    then found too. Returns the folder added, or None."""
+    if shutil.which("yt-dlp"):
+        return None
+    for d in pip_tool_dirs():
+        if shutil.which("yt-dlp", path=d):
+            os.environ["PATH"] = os.environ.get("PATH", "") + os.pathsep + d
+            return d
+    return None
 
 # Ordered best-first. Anything that resolves 1080p goes before the 360p-only
 # clients, so we only fall back to low resolution as a last resort.

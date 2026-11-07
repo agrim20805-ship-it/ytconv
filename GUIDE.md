@@ -154,7 +154,24 @@ way.
 
 With uv, `uvx ytconv "URL"` runs it without installing anything permanently.
 
-yt-dlp and ffmpeg still need installing separately (see Requirements).
+yt-dlp and ffmpeg still need installing separately (see Requirements) - or,
+on **Python 3.11 or newer**, let pip bring yt-dlp too:
+
+```bash
+pip install "ytconv[full]"
+```
+
+This installs yt-dlp with what YouTube's JavaScript puzzle needs (its solver
+and Deno, about 100 MB in all), and ytconv finds them even when pip put them
+in a folder your terminal doesn't search - so it also works with
+`uv tool install "ytconv[full]"` and `pipx install "ytconv[full]"`. Keep it up
+to date with `pip install -U yt-dlp` when downloads start failing. **ffmpeg is
+still a separate install** (`brew install ffmpeg`, or
+[ffmpeg.org](https://ffmpeg.org/download.html)) - you only need it for frames.
+
+On Python 3.9 or 3.10, `[full]` installs nothing extra: the newest yt-dlp needs
+Python 3.11, and pip would otherwise pick a year-old copy that YouTube no longer
+works with. Install yt-dlp with Homebrew there instead.
 
 From your own Python code, pass the same options as the command line, as a
 list:

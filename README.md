@@ -21,7 +21,8 @@ brew install yt-dlp ffmpeg
 pip install ytconv
 ```
 
-On a Mac's built-in Python, use `pip3` and `python3 -m ytconv`.
+On a Mac's built-in Python, use `pip3` and `python3 -m ytconv`. On Python 3.11+,
+`pip install "ytconv[full]"` also brings yt-dlp.
 
 ## Use
 

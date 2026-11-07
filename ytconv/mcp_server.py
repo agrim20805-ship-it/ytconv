@@ -980,6 +980,10 @@ def _widen_path():
     if added:
         os.environ["PATH"] = os.pathsep.join([p for p in have if p] + added)
         log("added to PATH:", ", ".join(added))
+    from . import fetch
+    pip_dir = fetch.use_pip_tools()
+    if pip_dir:
+        log("added to PATH (yt-dlp installed with ytconv[full]):", pip_dir)
     for tool in ("yt-dlp", "ffmpeg"):
         if not shutil.which(tool):
             log(f"warning: {tool} not found on PATH - conversions will fail until it is installed")
