@@ -10,7 +10,10 @@ For every video in tests/testset.json:
   4. extract those seconds as JPGs for the labelling page
 
 Run from the project folder:
-    uv run python tests/build_testset.py --media /some/temp/dir [--only KEY] [--local-gameplay FILE]
+    uv run python tests/build_testset.py --media /some/temp/dir [--only KEY] [--round N] [--local-gameplay FILE]
+
+A video with no "round" field in tests/testset.json is round 1. --round 2 builds only
+the new videos, so round 1 is not downloaded again.
 """
 
 import argparse
@@ -165,6 +168,7 @@ def main():
     p.add_argument("--media", required=True, help="where the downloaded test videos live")
     p.add_argument("--only", default=None, help="build just this video key")
     p.add_argument("--local-gameplay", default=None, help="path to the local gameplay clip")
+    p.add_argument("--round", type=int, default=None, help="build just this round (1 = the original set)")
     args = p.parse_args()
 
     spec = json.loads((ROOT / "tests" / "testset.json").read_text())
@@ -173,6 +177,8 @@ def main():
         if video.get("purpose") == "clean":   # made by tests/score_clean.py --build
             continue
         if args.only and video["key"] != args.only:
+            continue
+        if args.round is not None and video.get("round", 1) != args.round:
             continue
         n = build(video, args.media, args.local_gameplay)
         total += n or 0

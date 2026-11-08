@@ -1,5 +1,5 @@
 {
- "note": "Test videos for tests/score.py. Media is never stored in the repo: build_testset.py downloads it. Labels in tests/labels/ were made by a person looking at each frame.",
+ "note": "Test videos for tests/score.py. Media is never stored in the repo: build_testset.py downloads it. Labels in tests/labels/ were made by a person looking at each frame. Round 1 is every entry without a \"round\" field (the original 73% set); round 2 (2026-11-07) is 9 new videos from new channels, picked before any were scanned and run with the code frozen at commit e96bace.",
  "videos": [
   {
    "key": "slides",
@@ -82,6 +82,79 @@
    "purpose": "clean",
    "source": "https://www.youtube.com/watch?v=3EJlovevfcA",
    "answer_key": null
+  },
+  {
+   "key": "r2-slidespen",
+   "style": "slides with pen notes, voice-over",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=Nml3KP18koA",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-french",
+   "style": "French slides, voice-over",
+   "language": "fr",
+   "source": "https://www.youtube.com/watch?v=gR0KlIqloM4",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-excel",
+   "style": "Excel screen recording",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=LgXzzu68j7M",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-whiteboard",
+   "style": "physical whiteboard, presenter writing",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=L3DK-n3ojTw",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-german",
+   "style": "German, presenter in front of slides",
+   "language": "de",
+   "source": "https://www.youtube.com/watch?v=Lkk1LzwrqeA",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-minecraft",
+   "style": "long gameplay (Minecraft, 28 min)",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=K4vtrzcqyg0",
+   "answer_key": null,
+   "round": 2,
+   "long_gameplay": true
+  },
+  {
+   "key": "r2-lightboard",
+   "style": "lightboard, presenter writing on glass",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=kpFvA3Pw6EE",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-tablet",
+   "style": "tablet handwriting on black",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=NIwcDnFjj98",
+   "answer_key": null,
+   "round": 2
+  },
+  {
+   "key": "r2-cartoon",
+   "style": "cartoon animation",
+   "language": "en",
+   "source": "https://www.youtube.com/watch?v=6mgkoqcm6Sg",
+   "answer_key": null,
+   "round": 2
   }
  ]
 }

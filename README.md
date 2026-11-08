@@ -9,8 +9,8 @@ frames worth seeing - slides, diagrams, code - not the presenter's face.
 
 - Transcripts from captions, or free speech-to-text on your own computer
 - Frames picked to suit slides, whiteboards or gameplay
-- Translation, a notes page, and video files from your computer
-- Research mode: compares several videos on a topic, each claim linked to the second it was said
+- Translation, a notes page, and local video files
+- Research mode: compares several videos on a topic, linking each claim to its moment
 
 ## Requirements
 
@@ -39,7 +39,8 @@ ytconv --search "topic"    # research mode
 **With Claude:** a Claude Code skill and an MCP server are included
 ([setup](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/GUIDE.md#use-it-with-claude-code)).
 
-**Tested** on six kinds of video: 73% of the frames it kept were useful in notes
+**Tested** on 15 videos of eight kinds: 73% of kept frames were useful on the first
+six; kept frames show 61% of useful moments across all 15
 ([results](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md),
 [every command checked](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/TESTED.md)).
 
@@ -49,4 +50,4 @@ warranty. Built with AI assistance.
 
 ---
 
-For more detailed instructions, check [this](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/GUIDE.md).
+[Full guide](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/GUIDE.md).

@@ -3,6 +3,7 @@
     uv run python tests/score.py            # print the table
     uv run python tests/score.py --write    # also write tests/RESULTS.md
     uv run python tests/score.py --max-same 0   # without the repeated-slide cap
+    uv run python tests/score.py --round 2      # one round only (no "round" field = round 1)
 
 The modes are re-run on the saved scans with the CURRENT code, so a change to
 ytconv/frames.py is scored the moment it is made - no re-download.
@@ -74,41 +75,80 @@ def pct(x):
     return "  -  " if x is None else f"{x:5.0%}"
 
 
+def add(total, r, n_useful):
+    """Add one video's row for a mode to a running total."""
+    total["useful"] += r["useful"]
+    total["not"] += r["not"]
+    if r["coverage"] is not None:
+        total["cov_n"] += round(r["coverage"] * n_useful)
+        total["cov_d"] += n_useful
+
+
+def summary(t):
+    """'73% (91/125)', '76% (48/63)' for a running total."""
+    prec = t["useful"] / (t["useful"] + t["not"]) if t["useful"] + t["not"] else None
+    cov = t["cov_n"] / t["cov_d"] if t["cov_d"] else None
+    return (f"{pct(prec)} ({t['useful']}/{t['useful'] + t['not']})",
+            f"{pct(cov)} ({t['cov_n']}/{t['cov_d']})")
+
+
+def new_total():
+    return {"useful": 0, "not": 0, "cov_n": 0, "cov_d": 0}
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--write", action="store_true", help="also write tests/RESULTS.md")
     p.add_argument("--max-same", type=int, default=repeats.MAX_SAME,
                    help="the tool's repeated-slide cap (0 = off); needs "
                         "tests/build_repeats_cache.py to have run")
+    p.add_argument("--round", type=int, default=None,
+                   help="score one round only (a video with no round field is round 1)")
     args = p.parse_args()
 
     labels = load_labels()
     spec = json.loads((ROOT / "tests" / "testset.json").read_text())
     lines = ["| video | style | mode | kept | useful | not | precision | coverage |",
              "|---|---|---|---|---|---|---|---|"]
-    totals = {}
+    totals, by_round, long_rows = {}, {}, []
     for v in spec["videos"]:
         key = v["key"]
+        rnd = v.get("round", 1)
         if v.get("purpose") == "at" or not (ROOT / "testdata" / key / "scan.json").exists():
+            continue
+        if args.round is not None and rnd != args.round:
             continue
         rows, n_lab, n_useful = score_video(key, labels, args.max_same)
         for mode, r in rows.items():
             lines.append(f"| {key} | {v['style']} | {mode} | {r['kept']} | {r['useful']} | {r['not']} | "
                          f"{pct(r['precision'])} | {pct(r['coverage'])} |")
-            t = totals.setdefault(mode, {"useful": 0, "not": 0, "cov_n": 0, "cov_d": 0})
-            t["useful"] += r["useful"]
-            t["not"] += r["not"]
-            if r["coverage"] is not None:
-                t["cov_n"] += round(r["coverage"] * n_useful)
-                t["cov_d"] += n_useful
+            add(totals.setdefault(mode, new_total()), r, n_useful)
+            add(by_round.setdefault((rnd, mode), new_total()), r, n_useful)
+        if v.get("long_gameplay"):
+            t = new_total()
+            add(t, rows["auto"], n_useful)
+            long_rows.append((key, v["style"], rows["auto"]["kept"], t))
     lines.append("")
     lines.append("| all videos | mode | precision | coverage |")
     lines.append("|---|---|---|---|")
     for mode, t in totals.items():
-        prec = t["useful"] / (t["useful"] + t["not"]) if t["useful"] + t["not"] else None
-        cov = t["cov_n"] / t["cov_d"] if t["cov_d"] else None
-        lines.append(f"| | {mode} | {pct(prec)} ({t['useful']}/{t['useful'] + t['not']}) | "
-                     f"{pct(cov)} ({t['cov_n']}/{t['cov_d']}) |")
+        prec, cov = summary(t)
+        lines.append(f"| | {mode} | {prec} | {cov} |")
+    rounds = sorted({rnd for rnd, _ in by_round})
+    if len(rounds) > 1:
+        lines.append("")
+        lines.append("| round | mode | precision | coverage |")
+        lines.append("|---|---|---|---|")
+        for rnd in rounds:
+            for mode in totals:
+                if (rnd, mode) in by_round:
+                    prec, cov = summary(by_round[(rnd, mode)])
+                    lines.append(f"| {rnd} | {mode} | {prec} | {cov} |")
+    for key, style, kept, t in long_rows:
+        prec, cov = summary(t)
+        lines.append("")
+        lines.append(f"Long gameplay video on its own ({key}, {style}), auto: {kept} kept, "
+                     f"precision {prec.strip()}, coverage {cov.strip()}.")
     text = "\n".join(lines)
     print(text)
     if args.write:

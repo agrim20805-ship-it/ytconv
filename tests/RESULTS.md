@@ -2,7 +2,7 @@
 
 ## Frame picking against human labels
 
-Made by `tests/score.py` from the labels in `tests/labels/frames.csv`: 404 frames, each looked at by a person and marked useful in notes or not. Rule used: a whiteboard frame where the presenter's body or hand covers the writing counts as not useful, unless they are pointing at it.
+Made by `tests/score.py` from the labels in `tests/labels/frames.csv`: 926 frames, each looked at by a person and marked useful in notes or not. Rule used: a whiteboard frame where the presenter's body or hand covers the writing counts as not useful, unless they are pointing at it.
 
 precision = of the frames a mode keeps, the share a person called useful. coverage = of the useful moments in an even sample, the share some kept frame shows.
 
@@ -42,14 +42,102 @@ default, motion4.5 and auto include the tool's repeated-slide cap (at most 2 fra
 | gameplay | gameplay Short, fast motion | gameplay | 5 | 2 | 3 |   40% |   60% |
 | gameplay | gameplay Short, fast motion | every | 2 | 1 | 1 |   50% |   20% |
 | gameplay | gameplay Short, fast motion | auto | 5 | 2 | 3 |   40% |   60% |
+| r2-slidespen | slides with pen notes, voice-over | default | 12 | 12 | 0 |  100% |  100% |
+| r2-slidespen | slides with pen notes, voice-over | motion4.5 | 12 | 12 | 0 |  100% |  100% |
+| r2-slidespen | slides with pen notes, voice-over | gameplay | 35 | 17 | 0 |  100% |  100% |
+| r2-slidespen | slides with pen notes, voice-over | every | 35 | 9 | 0 |  100% |  100% |
+| r2-slidespen | slides with pen notes, voice-over | auto | 12 | 12 | 0 |  100% |  100% |
+| r2-french | French slides, voice-over | default | 16 | 16 | 0 |  100% |   57% |
+| r2-french | French slides, voice-over | motion4.5 | 16 | 16 | 0 |  100% |   57% |
+| r2-french | French slides, voice-over | gameplay | 31 | 23 | 0 |  100% |   51% |
+| r2-french | French slides, voice-over | every | 35 | 7 | 0 |  100% |   86% |
+| r2-french | French slides, voice-over | auto | 16 | 16 | 0 |  100% |   57% |
+| r2-excel | Excel screen recording | default | 18 | 18 | 0 |  100% |   85% |
+| r2-excel | Excel screen recording | motion4.5 | 19 | 18 | 1 |   95% |   85% |
+| r2-excel | Excel screen recording | gameplay | 35 | 33 | 2 |   94% |   82% |
+| r2-excel | Excel screen recording | every | 35 | 32 | 2 |   94% |   76% |
+| r2-excel | Excel screen recording | auto | 18 | 18 | 0 |  100% |   85% |
+| r2-whiteboard | physical whiteboard, presenter writing | default | 51 | 17 | 0 |  100% |   26% |
+| r2-whiteboard | physical whiteboard, presenter writing | motion4.5 | 44 | 15 | 0 |  100% |   23% |
+| r2-whiteboard | physical whiteboard, presenter writing | gameplay | 35 | 16 | 0 |  100% |    9% |
+| r2-whiteboard | physical whiteboard, presenter writing | every | 35 | 7 | 0 |  100% |    6% |
+| r2-whiteboard | physical whiteboard, presenter writing | auto | 35 | 16 | 0 |  100% |    9% |
+| r2-german | German, presenter in front of slides | default | 28 | 21 | 0 |  100% |   91% |
+| r2-german | German, presenter in front of slides | motion4.5 | 36 | 36 | 0 |  100% |   94% |
+| r2-german | German, presenter in front of slides | gameplay | 35 | 21 | 0 |  100% |   57% |
+| r2-german | German, presenter in front of slides | every | 35 | 7 | 0 |  100% |   91% |
+| r2-german | German, presenter in front of slides | auto | 36 | 36 | 0 |  100% |   94% |
+| r2-minecraft | long gameplay (Minecraft, 28 min) | default | 38 | 13 | 0 |  100% |   17% |
+| r2-minecraft | long gameplay (Minecraft, 28 min) | motion4.5 | 56 | 14 | 1 |   93% |   17% |
+| r2-minecraft | long gameplay (Minecraft, 28 min) | gameplay | 35 | 13 | 2 |   87% |    7% |
+| r2-minecraft | long gameplay (Minecraft, 28 min) | every | 35 | 6 | 0 |  100% |    0% |
+| r2-minecraft | long gameplay (Minecraft, 28 min) | auto | 35 | 13 | 2 |   87% |    7% |
+| r2-lightboard | lightboard, presenter writing on glass | default | 20 | 11 | 0 |  100% |   43% |
+| r2-lightboard | lightboard, presenter writing on glass | motion4.5 | 28 | 19 | 0 |  100% |   51% |
+| r2-lightboard | lightboard, presenter writing on glass | gameplay | 35 | 20 | 0 |  100% |   43% |
+| r2-lightboard | lightboard, presenter writing on glass | every | 35 | 6 | 0 |  100% |   60% |
+| r2-lightboard | lightboard, presenter writing on glass | auto | 28 | 19 | 0 |  100% |   51% |
+| r2-tablet | tablet handwriting on black | default | 17 | 14 | 0 |  100% |   74% |
+| r2-tablet | tablet handwriting on black | motion4.5 | 17 | 14 | 0 |  100% |   74% |
+| r2-tablet | tablet handwriting on black | gameplay | 30 | 27 | 0 |  100% |   74% |
+| r2-tablet | tablet handwriting on black | every | 35 | 33 | 0 |  100% |   97% |
+| r2-tablet | tablet handwriting on black | auto | 17 | 14 | 0 |  100% |   74% |
+| r2-cartoon | cartoon animation | default | 31 | 31 | 0 |  100% |   37% |
+| r2-cartoon | cartoon animation | motion4.5 | 31 | 31 | 0 |  100% |   37% |
+| r2-cartoon | cartoon animation | gameplay | 35 | 28 | 0 |  100% |   31% |
+| r2-cartoon | cartoon animation | every | 35 | 15 | 0 |  100% |   14% |
+| r2-cartoon | cartoon animation | auto | 31 | 31 | 0 |  100% |   37% |
 
 | all videos | mode | precision | coverage |
 |---|---|---|---|
-| | default |   70% (75/107) |   71% (45/63) |
-| | motion4.5 |   70% (77/110) |   68% (43/63) |
-| | gameplay |   44% (44/101) |   41% (26/63) |
-| | every |   44% (43/98) |   62% (39/63) |
-| | auto |   73% (91/125) |   76% (48/63) |
+| | default |   88% (228/260) |   62% (228/370) |
+| | motion4.5 |   88% (252/287) |   62% (229/370) |
+| | gameplay |   80% (242/303) |   49% (183/370) |
+| | every |   74% (165/222) |   60% (223/370) |
+| | auto |   88% (266/302) |   61% (226/370) |
+
+| round | mode | precision | coverage |
+|---|---|---|---|
+| 1 | default |   70% (75/107) |   71% (45/63) |
+| 1 | motion4.5 |   70% (77/110) |   68% (43/63) |
+| 1 | gameplay |   44% (44/101) |   41% (26/63) |
+| 1 | every |   44% (43/98) |   62% (39/63) |
+| 1 | auto |   73% (91/125) |   76% (48/63) |
+| 2 | default |  100% (153/153) |   60% (183/307) |
+| 2 | motion4.5 |   99% (175/177) |   61% (186/307) |
+| 2 | gameplay |   98% (198/202) |   51% (157/307) |
+| 2 | every |   98% (122/124) |   60% (184/307) |
+| 2 | auto |   99% (175/177) |   58% (178/307) |
+
+Long gameplay video on its own (r2-minecraft, long gameplay (Minecraft, 28 min)), auto: 35 kept, precision 87% (13/15), coverage 7% (2/29).
+
+## Round 2 (2026-11-07)
+
+Nine new videos from nine channels not used before (`"round": 2` in `tests/testset.json`),
+chosen before any were scanned, and run with the code frozen at commit e96bace: automatic
+mode, default settings. 522 new frames, each labelled by a person. Round 1 is unchanged.
+
+| auto mode | precision | coverage |
+|---|---|---|
+| Round 1 (6 videos) | 73% (91/125) | 76% (48/63) |
+| Round 2 (9 videos) | 99% (175/177) | 58% (178/307) |
+| Combined | 88% (266/302) | 61% (226/370) |
+
+Long gameplay video on its own (r2-minecraft, 28 min): 35 kept, precision 87% (13/15),
+coverage 7% (2/29).
+
+**Read round 2's precision with care.** Its labeller called 98% of all queued frames useful
+(511 of 522), where round 1's called 48% useful (163 of 342). With labels that generous,
+precision cannot separate good picking from bad: one frame every 10 seconds, with no
+filtering at all, also scores 98% (122/124) on round 2. The combined precision is pulled up by
+this, not by better picking.
+
+**Coverage is the more telling round-2 number, and it is lower:** 58% against 76%. The
+weakest videos were the physical whiteboard (9%), the long gameplay video (7%) and the cartoon
+(37%): on all three the tool keeps frames from a few moments and misses most of the rest.
+
+51 of the 228 frames auto mode keeps in round 2 have no label of their own and no labelled
+neighbour showing the same picture, so they are left out of precision.
 
 ## --at against human answers
 

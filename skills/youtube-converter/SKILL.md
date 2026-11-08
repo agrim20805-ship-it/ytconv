@@ -211,7 +211,8 @@ presenter-removed copies (Step 7); gameplay keeps the sharpest moments of fast
 footage. Across six hand-labelled lecture
 styles ([tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md)) the automatic choice kept 73% useful
 frames and showed 76% of the useful moments, against 60% and 56% for the old
-always-default behaviour. **Do not pass a mode flag unless the printed mode is
+always-default behaviour. Nine newer videos showed only 58%: weakest on a physical whiteboard, long
+gameplay and cartoons, so say so when one of those comes back thin. **Do not pass a mode flag unless the printed mode is
 clearly wrong** for the video - any of `--gameplay`, `--every`, `--motion-max`
 turns the automatic choice off. When overriding:
 

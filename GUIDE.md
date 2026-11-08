@@ -632,6 +632,16 @@ useful moments (from an even sample) that some kept frame shows.
 | Gameplay Short | gameplay | 2 of 5 | 3 of 5 |
 | **All six** | | **73%** | **76%** |
 
+**Round 2 (2026-11-07):** nine more videos from new channels - slides with pen notes,
+French slides, an Excel screen recording, a physical whiteboard, a German lecture in front
+of slides, 28 minutes of Minecraft, a lightboard, tablet handwriting and a cartoon - run
+with the settings frozen and 522 more frames labelled. The frames it kept showed **58%** of
+the useful moments (76% in the first round), so **61%** across all 15 videos. It did worst
+on the whiteboard (9%), the Minecraft video (7%) and the cartoon (37%): it keeps frames from
+a few moments and misses the rest. The "useful" share was 99%, but that round's labels
+called 98% of all frames useful, so even one frame every 10 seconds scored 98% - it says
+little. Details: [tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md).
+
 Before 2026-10-22 the tool used the default mode on everything unless told
 otherwise: 60% useful and 56% shown. On the whiteboard it kept no useful
 frames, and on the Hindi lecture it kept one. On the light slides, keeping
