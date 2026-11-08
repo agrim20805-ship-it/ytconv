@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Check your setup first
+    url: https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/GUIDE.md#health-check
+    about: The health check finds most problems in a minute. The usual fix is updating yt-dlp.

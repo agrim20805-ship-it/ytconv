@@ -32,7 +32,7 @@ frame next to what was being said ([notes page](#notes-page)).
 [Repeated slides](#at-most-two-frames-of-one-slide) ·
 [How it picks frames](#how-it-picks-frames) · [How well it works](#how-well-it-works) ·
 [Health check](#health-check) · [Claude Code skill](#use-it-with-claude-code) ·
-[Claude Desktop (MCP)](#use-it-from-claude-desktop-or-other-apps-mcp) · [Ears](#experimental-ears) ·
+[Claude Desktop (MCP)](#use-it-from-claude-desktop-or-other-apps-mcp) ·
 [Just ask Claude](#or-just-ask-claude) · [Disclaimer](#disclaimer) ·
 [Every command, tested](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/TESTED.md)
 
@@ -55,6 +55,14 @@ brew install yt-dlp ffmpeg uv
 problems (file paths, text encoding, Hindi and other non-English text) but has
 **never been run on Windows**, so expect rough edges. On Windows, keep the URL
 in double quotes: `&` in a URL means something else to cmd and PowerShell.
+
+**What has been run where** (each cell says exactly what was done):
+
+| | macOS | Windows | Linux |
+|---|---|---|---|
+| Full run (download, transcript, frames) | run by the author | not run | not run |
+| Unit tests on the author's Mac (Python 3.9 and 3.13) | pass (49) | - | - |
+| Unit tests in GitHub Actions (Python 3.9 and 3.13) | not run yet | not run yet | not run yet |
 
 **Why Homebrew's yt-dlp.** YouTube now sends a small JavaScript puzzle before
 it serves a video. Homebrew's yt-dlp comes with the solver for
