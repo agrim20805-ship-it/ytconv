@@ -62,7 +62,7 @@ in double quotes: `&` in a URL means something else to cmd and PowerShell.
 |---|---|---|---|
 | Full run (download, transcript, frames) | run by the author | not run | not run |
 | Unit tests on the author's Mac (Python 3.9 and 3.13) | pass (49) | - | - |
-| Unit tests in GitHub Actions (Python 3.9 and 3.13) | not run yet | not run yet | not run yet |
+| Unit tests in GitHub Actions (Python 3.9 and 3.13, 2026-11-08) | pass | pass | pass |
 
 **Why Homebrew's yt-dlp.** YouTube now sends a small JavaScript puzzle before
 it serves a video. Homebrew's yt-dlp comes with the solver for
