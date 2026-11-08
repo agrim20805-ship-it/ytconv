@@ -34,7 +34,7 @@ frame next to what was being said ([notes page](#notes-page)).
 [Health check](#health-check) · [Claude Code skill](#use-it-with-claude-code) ·
 [Claude Desktop (MCP)](#use-it-from-claude-desktop-or-other-apps-mcp) ·
 [Just ask Claude](#or-just-ask-claude) · [Disclaimer](#disclaimer) ·
-[Every command, tested](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/TESTED.md)
+[Every command, tested](https://github.com/agrim20805-ship-it/ytconv/blob/main/TESTED.md)
 
 ## Requirements
 
@@ -622,7 +622,7 @@ recording, a whiteboard, tablet drawing, Hindi speech over English writing,
 voice-over slides, a code screencast - plus a gameplay Short. A person looked at
 **360 frames** (plus 44 presenter-removed copies) and marked each useful in notes or not, and marked **45 moments**
 where a visual first appears after it is spoken. Full tables:
-[tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md). Re-run them yourself with the scripts in
+[tests/RESULTS.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/tests/RESULTS.md). Re-run them yourself with the scripts in
 `tests/` (they download the test videos; nothing is stored in the repo but the
 labels).
 
@@ -648,7 +648,7 @@ the useful moments (76% in the first round), so **61%** across all 15 videos. It
 on the whiteboard (9%), the Minecraft video (7%) and the cartoon (37%): it keeps frames from
 a few moments and misses the rest. The "useful" share was 99%, but that round's labels
 called 98% of all frames useful, so even one frame every 10 seconds scored 98% - it says
-little. Details: [tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md).
+little. Details: [tests/RESULTS.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/tests/RESULTS.md).
 
 Before 2026-10-22 the tool used the default mode on everything unless told
 otherwise: 60% useful and 56% shown. On the whiteboard it kept no useful
@@ -715,7 +715,7 @@ Run it on your own computer: YouTube often blocks cloud servers, so a check
 there mostly fails for the wrong reason.
 
 Every command in this README was also run by hand on a fresh copy, with the
-results in [TESTED.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/TESTED.md).
+results in [TESTED.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/TESTED.md).
 
 ## Use it with Claude Code
 
@@ -728,11 +728,11 @@ captions, and to translate when YouTube won't.
 To install it, from a terminal:
 
 ```bash
-git clone https://github.com/agrim20805-ship-it/Youtuber-Converter.git
+git clone https://github.com/agrim20805-ship-it/ytconv.git
 ```
 
 ```bash
-cd Youtuber-Converter
+cd ytconv
 ```
 
 ```bash
@@ -807,7 +807,7 @@ your cloned folder:
   "mcpServers": {
     "ytconv": {
       "command": "uv",
-      "args": ["--directory", "/full/path/to/Youtuber-Converter",
+      "args": ["--directory", "/full/path/to/ytconv",
                "run", "python", "-m", "ytconv.mcp_server"]
     }
   }
@@ -820,7 +820,7 @@ Results go to a temporary folder unless you name one;
 Tested by sending it the same messages an MCP app sends, started with the
 short PATH Claude Desktop uses: every option reached the command, two frames
 came back as pictures, and a full research run (search, three videos, the
-note) passed 50 of 50 citations. See [TESTED.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/TESTED.md).
+note) passed 50 of 50 citations. See [TESTED.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/TESTED.md).
 **Not yet tested inside the Claude Desktop app itself.**
 
 ## Experimental: ears
@@ -850,7 +850,7 @@ python3 detect.py audio.webm 30
 
 The second command lists moments in the first 30 seconds where a sudden low or
 high sound appears. To draw the timeline picture and for the other tools, see
-[experiments/ears/README.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/experiments/ears/README.md).
+[experiments/ears/README.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/experiments/ears/README.md).
 
 ## Or just ask Claude
 

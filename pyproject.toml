@@ -32,9 +32,9 @@ requires-python = ">=3.9"
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/agrim20805-ship-it/Youtuber-Converter"
-Repository = "https://github.com/agrim20805-ship-it/Youtuber-Converter"
-Issues = "https://github.com/agrim20805-ship-it/Youtuber-Converter/issues"
+Homepage = "https://github.com/agrim20805-ship-it/ytconv"
+Repository = "https://github.com/agrim20805-ship-it/ytconv"
+Issues = "https://github.com/agrim20805-ship-it/ytconv/issues"
 
 [project.scripts]
 ytconv = "ytconv.cli:main"

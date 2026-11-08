@@ -47,6 +47,6 @@ done
     echo "Install it with:  pip install ytconv"
     echo "It also needs yt-dlp and ffmpeg. On a Mac:  brew install yt-dlp ffmpeg"
     echo "Windows and Linux: see the Requirements section of GUIDE.md"
-    echo "(https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/GUIDE.md)."
+    echo "(https://github.com/agrim20805-ship-it/ytconv/blob/main/GUIDE.md)."
 } >&2
 exit 1

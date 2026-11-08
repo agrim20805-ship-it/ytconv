@@ -209,7 +209,7 @@ recordings and tablet drawing (it also keeps a light slide with a small moving
 presenter bubble beside it); board lets a moving presenter through and makes
 presenter-removed copies (Step 7); gameplay keeps the sharpest moments of fast
 footage. Across six hand-labelled lecture
-styles ([tests/RESULTS.md](https://github.com/agrim20805-ship-it/Youtuber-Converter/blob/main/tests/RESULTS.md)) the automatic choice kept 73% useful
+styles ([tests/RESULTS.md](https://github.com/agrim20805-ship-it/ytconv/blob/main/tests/RESULTS.md)) the automatic choice kept 73% useful
 frames and showed 76% of the useful moments, against 60% and 56% for the old
 always-default behaviour. Nine newer videos showed only 58%: weakest on a physical whiteboard, long
 gameplay and cartoons, so say so when one of those comes back thin. **Do not pass a mode flag unless the printed mode is
